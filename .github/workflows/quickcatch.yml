@@ -51,4 +51,4 @@ jobs:
       run: docker build . -t minho7336/qkc-app-fro:${{ steps.increment-version.outputs.new-tag }}  # 도커 이미지를 빌드하고 새로운 태그를 붙임
 
     - name: Push Docker image
-      run: docker push minho7336/qkc-app-fro:${{ steps.increment-version.outputs.new-tag }}  # 빌드된 도커 이미지를 Docker Hub에 push
+      docker push 192.168.56.104:443/qkc/qkc-app-fro:${{ steps.increment-version.outputs.new-tag }}  # 빌드된 도커 이미지를 Harbor에 push
