@@ -16,11 +16,15 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v1  # Docker Buildx를 설정, Buildx는 다양한 플랫폼에 대해 이미지를 빌드할 수 있게 해줌
 
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v2  # Docker Hub에 로그인
-      with:
-        username: ${{ secrets.DOCKER_HUB_USERNAME }} 
-        password: ${{ secrets.DOCKER_HUB_TOKEN }}  
+    # - name: Log in to Docker Hub
+    #   uses: docker/login-action@v2  # Docker Hub에 로그인
+    #   with:
+    #     username: ${{ secrets.DOCKER_HUB_USERNAME }} 
+    #     password: ${{ secrets.DOCKER_HUB_TOKEN }}  
+
+    # For Harbor
+    - name: Log in to Harbor
+      run: echo "${{ secrets.HARBOR_PASSWORD }}" | docker login 192.168.56.104:443 -u "${{ secrets.HARBOR_USERNAME }}" --password-stdin
 
     - name: Get latest Docker image version
       id: get-latest-version 
@@ -48,7 +52,7 @@ jobs:
         echo "::set-output name=new-tag::$NEW_VERSION"  # 새로운 태그를 워크플로우 출력으로 설정
 
     - name: Build Docker image
-      run: docker build . -t minho7336/qkc-app-fro:${{ steps.increment-version.outputs.new-tag }}  # 도커 이미지를 빌드하고 새로운 태그를 붙임
+      run: docker build . -t 192.168.56.104:443/qkc/qkc-app-fro:${{ steps.increment-version.outputs.new-tag }}  # 도커 이미지를 빌드하고 새로운 태그를 붙임
 
     - name: Push Docker image
-      docker push 192.168.56.104:443/qkc/qkc-app-fro:${{ steps.increment-version.outputs.new-tag }}  # 빌드된 도커 이미지를 Harbor에 push
+      run: docker push 192.168.56.104:443/qkc/qkc-app-fro:${{ steps.increment-version.outputs.new-tag }}  # 빌드된 도커 이미지를 Harbor에 push
